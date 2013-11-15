@@ -19,7 +19,9 @@
                             :exclusions [com.datastax.cassandra/cassandra-driver-core]]
                            [com.datastax.cassandra/cassandra-driver-core "1.0.3"]
                            [byte-streams "0.1.4"]
-                           [org.clojure/math.combinatorics "0.0.4"]]
+                           [org.clojure/math.combinatorics "0.0.4"]
+                           [clj-http "0.7.7"]
+                           [cheshire "5.2.0"]]
             :profiles {:dev {:dependencies [[midje "1.5.0"]]}}
             :main jepsen.bin
             :jvm-opts ["-Xmx512m" "-server"])
