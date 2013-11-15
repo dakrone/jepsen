@@ -9,7 +9,7 @@
                             riak-lww-quorum-app
                             riak-lww-sloppy-quorum-app
                             riak-crdt-app]]
-        [jepsen.elasticsearch :only [es-app]]
+        [jepsen.elasticsearch :only [es-app es-update-app]]
         jepsen.mongo
         jepsen.redis
         [jepsen.pg    :only [pg-app]]
@@ -39,7 +39,8 @@
    "nuodb"                  nuodb-app
    "zk"                     zk-app
    "lock"                   locking-app
-   "elasticsearch"          es-app})
+   "elasticsearch"          es-app
+   "elasticsearch-update"   es-update-app})
 
 (def failures
   "A map from command-line names to failure modes."
