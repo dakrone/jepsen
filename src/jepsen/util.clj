@@ -1,11 +1,17 @@
 (ns jepsen.util
   "Kitchen sink"
-  (:import (java.util.concurrent.locks LockSupport)))
+  (:import (java.util.concurrent.locks LockSupport)
+           (java.text SimpleDateFormat)
+           (java.util Date)))
+
+(def date-format
+  "HH:mm:ss.SSS")
 
 (def logger (agent nil))
 (defn log-print
       [_ & things]
-      (apply println things))
+      (let [df (SimpleDateFormat. date-format)]
+        (apply println (.format df (Date.)) things)))
 (defn log
       [& things]
       (apply send-off logger log-print things))
