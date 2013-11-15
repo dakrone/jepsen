@@ -21,7 +21,7 @@
 (defn ip
   "Look up an ip for a hostname"
   [host]
-  (exec :dig :+short host))
+  (exec :sh :-c (format "dig +short %s | grep -v ^\\;\\;" host)))
 
 (defn cut-random-link
   "Cuts a random link to any of nodes."
