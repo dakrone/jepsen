@@ -8,7 +8,8 @@
 (defn es-app
   [opts]
   (let [host (str "http://" (:host opts) ":9200/")
-        idx "jepsen"]
+        idx "jepsen"
+        type "doc"]
     (reify SetApp
       (setup [app]
         (teardown app)
@@ -21,7 +22,7 @@
             :body))
 
       (add [app element]
-        (:status (http/post (str host idx "/doc/" element)
+        (:status (http/post (str host idx "/" type "/" element)
                             {:body (json/encode {:body element})
                              :as :string
                              :throw-exceptions true}))
@@ -29,7 +30,7 @@
 
       (results [app]
         (http/post (str host idx "/_refresh"))
-        (->> (http/post (str host idx "/doc/_search")
+        (->> (http/post (str host idx "/" type "/_search")
                         {:body (json/encode {:query {:match_all {}}
                                              :size 1111
                                              :from 0})
