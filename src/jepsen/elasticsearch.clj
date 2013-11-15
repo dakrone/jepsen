@@ -11,6 +11,7 @@
         idx "jepsen"]
     (reify SetApp
       (setup [app]
+        (teardown app)
         (-> (http/post
              (str host idx)
              {:body
@@ -38,4 +39,6 @@
             :hits))
 
       (teardown [app]
-        (:body (http/delete (str host idx) {:as :json}))))))
+        (:body (http/delete (str host idx)
+                            {:throw-exceptions false
+                             :as :json}))))))
