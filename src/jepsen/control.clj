@@ -124,8 +124,8 @@
   "Opens a session to the given host and evaluates body there."
   [host & body]
   `(let [agent# (ssh/ssh-agent {})
-         session# (ssh/session agent# ~host {:username "ubuntu"
-                                             :strict-host-key-checking :yes})]
+         session# (ssh/session agent# ~host {:username "vagrant"
+                                             :strict-host-key-checking :no})]
      (ssh/with-connection session#
        (binding [*session*  session#
                  *host*     ~host
