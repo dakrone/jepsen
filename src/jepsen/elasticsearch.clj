@@ -24,20 +24,22 @@
         (:status (http/post (str host idx "/doc/" element)
                             {:body (json/encode {:body element})
                              :as :string
-                             :throw-exceptions false})))
+                             :throw-exceptions false}))
+        ok)
 
       (results [app]
         (->> (http/post (str host idx "/doc/_search")
-                     {:body (json/encode {:query {:match_all {}}
-                                          :size 1111
-                                          :from 0})
-                      :as :json})
-            :body
-            :hits
-            :hits
-            (mapcat :_source)
-            (map second)
-            set))
+                        {:body (json/encode {:query {:match_all {}}
+                                             :size 1111
+                                             :from 0})
+                         :as :json})
+             :body
+             :hits
+             :hits
+             (mapcat :_source)
+             (map second)
+             (map long)
+             set))
 
       (teardown [app]
         (:body (http/delete (str host idx)
