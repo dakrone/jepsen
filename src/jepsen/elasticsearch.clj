@@ -23,12 +23,12 @@
       (add [app element]
         (:status (http/post (str host idx "/doc/" element)
                             {:body (json/encode {:body element})
-                             :query-params {"refresh" true}
                              :as :string
                              :throw-exceptions true}))
         ok)
 
       (results [app]
+        (http/post (str host idx "/_refresh"))
         (->> (http/post (str host idx "/doc/_search")
                         {:body (json/encode {:query {:match_all {}}
                                              :size 1111
