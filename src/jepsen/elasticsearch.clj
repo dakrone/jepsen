@@ -24,7 +24,7 @@
         (:status (http/post (str host idx "/doc/" element)
                             {:body (json/encode {:body element})
                              :as :string
-                             :throw-exceptions false}))
+                             :throw-exceptions true}))
         ok)
 
       (results [app]
