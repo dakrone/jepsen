@@ -23,6 +23,7 @@
       (add [app element]
         (:status (http/post (str host idx "/doc/" element)
                             {:body (json/encode {:body element})
+                             :query-params {"refresh" true}
                              :as :string
                              :throw-exceptions true}))
         ok)
