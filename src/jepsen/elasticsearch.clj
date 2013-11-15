@@ -21,22 +21,23 @@
             :body))
 
       (add [app element]
-        (if (= 200 (:status (http/post (str host idx "/doc/" element)
-                                       {:body (json/encode {:body element})
-                                        :as :string
-                                        :throw-exceptions false})))
-          ok
-          error))
+        (:status (http/post (str host idx "/doc/" element)
+                            {:body (json/encode {:body element})
+                             :as :string
+                             :throw-exceptions false})))
 
       (results [app]
-        (-> (http/post (str host idx "/doc/_search")
+        (->> (http/post (str host idx "/doc/_search")
                      {:body (json/encode {:query {:match_all {}}
                                           :size 1111
                                           :from 0})
                       :as :json})
             :body
             :hits
-            :hits))
+            :hits
+            (mapcat :_source)
+            (map second)
+            set))
 
       (teardown [app]
         (:body (http/delete (str host idx)
