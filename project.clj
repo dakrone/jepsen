@@ -24,4 +24,4 @@
                            [cheshire "5.2.0"]]
             :profiles {:dev {:dependencies [[midje "1.5.0"]]}}
             :main jepsen.bin
-            :jvm-opts ["-Xmx512m" "-server"])
+            :jvm-opts ["-Xmx512m" "-server" "-Djava.awt.headless=true"])
