@@ -23,13 +23,16 @@
             :body))
 
       (add [app element]
-        (let [r (http/post (str host idx "/" type "/" element)
-                           {:body (json/encode {:body element})
-                            :as :string
-                            :throw-exceptions true
-                            :query-params {"timeout" "1s"}})]
-          #_(log host idx (:status r)))
-        ok)
+        (try
+         (let [r (http/post (str host idx "/" type "/" element)
+                            {:body (json/encode {:body element})
+                             :as :string
+                             :throw-exceptions true
+                             :query-params {"timeout" "1s"}})]
+           #_(log host idx (:status r))
+           ok)
+         (catch Exception _
+           error)))
 
       (results [app]
         (http/post (str host idx "/_refresh"))
