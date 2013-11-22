@@ -119,7 +119,7 @@
   [f]
   (fn logger [req]
     (let [r (f req)]
-      (log (str req "\t" (pr-str r)))
+      (log (pr-str r))
       r)))
 
 (defn wrap-record-req

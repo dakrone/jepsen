@@ -29,7 +29,7 @@
 (defn colorize-ranges
   "Colorizes ranges of a string, like a VU meter. Takes a string, followed by a
   color and the maximum character index to apply it to.
-  
+
   (colorize-ranges \"12345678\" :green 5 :yellow 6 :red 7)"
   [s & ranges]
   (let [ranges (if (even? (count ranges))
@@ -42,8 +42,8 @@
                      (reduced [strips i1])
                      [(conj strips
                             (clansi/style
-                              (.substring s i1 (min i2 (.length s)))
-                              color))
+                             (.substring s i1 (min i2 (.length s)))
+                             color))
                       i2]))
                  [[] 0])
          first
@@ -57,33 +57,35 @@
         critical 10000
         w 60
         m 30000]
-  (str
-    (clansi/style (int latency) (condp < latency
-                                  critical :red
-                                  warning  :yellow
-                                  ok       :cyan
-                                  :green))
-    \tab
-    (-> (/ latency m)
-        (horizontal-bar w)
-        (colorize-ranges :green     (* w (/ ok m))
-                         :cyan      (* w (/ warning m))
-                         :yellow    (* w (/ critical m))
-                         :red)))))
+    (str
+     (clansi/style (int latency) (condp < latency
+                                   critical :red
+                                   warning  :yellow
+                                   ok       :cyan
+                                   :green))
+     \tab
+     (-> (/ latency m)
+         (horizontal-bar w)
+         (colorize-ranges :green     (* w (/ ok m))
+                          :cyan      (* w (/ warning m))
+                          :yellow    (* w (/ critical m))
+                          :red)))))
 
 (defn line
   "A log line for a response."
   [{:keys [req state latency message]}]
-  (str req \tab
-       (clansi/style
-         state
-         (case state
-           :ok :green
-           :error :red))
-       \tab
-       (latency-bar latency)
-       (when message
-         (str "\n" message))))
+  (with-out-str
+    (print req
+           (clansi/style
+            state
+            (case state
+              :ok :green
+              :error :red))
+           \tab
+           (latency-bar latency)
+           (if message
+             (str "\n" message)
+             ""))))
 
 (defn wrap-log
   "Returns a function that calls (f req), then logs the request and a colorized
@@ -94,7 +96,7 @@
       (log (line res))
       res)))
 
-(def ordered-log-buffer 
+(def ordered-log-buffer
   "An atom wrapping [next req index, pending responses, ready-to-print]"
   (atom [0
          (sorted-set-by #(compare (:req %1)
@@ -114,7 +116,7 @@
                                                   (if (= idx (:req e))
                                                     [(inc idx) (conj ready e)]
                                                     (reduced
-                                                      [idx ready])))
+                                                     [idx ready])))
                                                 [idx []]
                                                 queued)
                             queued (apply disj queued ready)]

@@ -6,7 +6,7 @@
         [jepsen.set-app]
         [jepsen.load]))
 
-(defn es-app
+(defn insert-app
   [opts]
   (let [host (str "http://" (:host opts) ":9200/")
         idx "jepsen"
@@ -23,10 +23,12 @@
             :body))
 
       (add [app element]
-        (:status (http/post (str host idx "/" type "/" element)
-                            {:body (json/encode {:body element})
-                             :as :string
-                             :throw-exceptions true}))
+        (let [r (http/post (str host idx "/" type "/" element)
+                           {:body (json/encode {:body element})
+                            :as :string
+                            :throw-exceptions true
+                            :query-params {"timeout" "1s"}})]
+          #_(log host idx (:status r)))
         ok)
 
       (results [app]
@@ -49,16 +51,14 @@
                             {:throw-exceptions false
                              :as :json}))))))
 
-(defn es-update-app
+(defn update-app
   [opts]
   (let [host (str "http://" (:host opts) ":9200/")
-        idx "jepsen2"
+        idx "jepsen"
         type "doc"]
     (reify SetApp
       (setup [app]
-        ;; Delete old index
         (teardown app)
-        ;; Create the index
         (http/post
          (str host idx)
          {:body
@@ -73,17 +73,25 @@
             :body))
 
       (add [app element]
-        (:status (http/post (str host idx "/" type "/mydoc/_update")
-                            {:body (json/encode
-                                    {:script "ctx._source.body += id"
-                                     :params {:id element}})
-                             :as :string
-                             :throw-exceptions true}))
-        ok)
+        (Thread/sleep (rand 20))
+        (let [r (-> (future
+                      (:status
+                       (http/post (str host idx "/" type "/mydoc/_update")
+                                  {:body (json/encode
+                                          {:script "ctx._source.body += id"
+                                           :params {:id element}})
+                                   :as :string
+                                   :throw-exceptions true
+                                   :query-params {"retry_on_conflict" "10"}})))
+                    (deref 65000 ::timeout))]
+          (when (= r ::timeout)
+            ;; (println "Timed out.")
+            (throw (RuntimeException. (str "timeout " element))))
+          ok))
 
       (results [app]
         (http/post (str host idx "/_refresh"))
-        (->> (http/post (str host idx "/" type "/_search")
+        (->> (http/post (str host idx "/" type "/_search?timeout=3s")
                         {:body (json/encode {:query {:match_all {}}
                                              :size 1
                                              :from 0})
