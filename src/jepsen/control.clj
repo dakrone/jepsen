@@ -15,7 +15,7 @@
 (def ^:dynamic *username* "Username"                      "ubuntu")
 (def ^:dynamic *password* "Password (for login and sudo)" "ubuntu")
 (def ^:dynamic *private-key-path*         "SSH identity file"     nil)
-(def ^:dynamic *strict-host-key-checking* "Verify SSH host keys"  :yes)
+(def ^:dynamic *strict-host-key-checking* "Verify SSH host keys"  :no)
 
 
 (defrecord Literal [string])
