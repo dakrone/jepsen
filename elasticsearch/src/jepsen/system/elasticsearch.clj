@@ -92,7 +92,7 @@
                       (recur)))
 
                   (info node "installing elasticsearch")
-                  (c/exec :apt-get :install :-y :openjdk-7-jre-headless)
+                  (c/exec :apt-get :install :-y :--force-yes :openjdk-7-jre-headless)
                   (c/exec :dpkg :-i :--force-confnew debfile))))
 
         (info node "configuring elasticsearch")

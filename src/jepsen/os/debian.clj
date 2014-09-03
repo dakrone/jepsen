@@ -50,7 +50,7 @@
         missing (set/difference pkgs (installed pkgs))]
     (when-not (empty? missing)
       (c/su
-        (apply c/exec :apt-get :install :-y missing)))))
+        (apply c/exec :apt-get :install :-y :--force-yes missing)))))
 
 (def os
   (reify os/OS
