@@ -73,10 +73,9 @@
     (setup! [_ test node]
       (c/su
         (c/cd "/tmp"
-              (let [version "1.1.0"
+              (let [version "1.4.0-SNAPSHOT"
                     debfile (str "elasticsearch-" version ".deb")
-                    uri     (str "https://download.elasticsearch.org/"
-                                 "elasticsearch/elasticsearch/"
+                    uri     (str "http://writequit.org/files/"
                                  debfile)]
                 (when-not (debian/installed? :elasticsearch)
                   (loop []
