@@ -167,6 +167,7 @@
       (case (:f op)
         :add (timeout 5000 (assoc op :type :info :value :timed-out)
                 (let [r (esd/create client index-name "number" {:num (:value op)})]
+                  (info "client:" client "op:" op "resp:" r)
                   (cond (esr/ok? r)
                         (assoc op :type :ok)
 
