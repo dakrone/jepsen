@@ -2,7 +2,7 @@
   (:require [cheshire.core          :as json]
             [clojure.java.io        :as io]
             [clojure.string         :as str]
-            [clojure.tools.logging  :refer [info]]
+            [clojure.tools.logging  :as log :refer [info]]
             [jepsen.client          :as client]
             [jepsen.control         :as c]
             [jepsen.control.net     :as net]
