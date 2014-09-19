@@ -130,20 +130,31 @@
   ;; wrong
   (-> ex .getData :object :body json/parse-string (get "error")))
 
+(def index-name "jepsen-index")
+
 (defn all-results
   "A sequence of all results from a search query."
   [& search-args]
   (let [_ (log/info "Querying results (size 0):" search-args)
         res (apply esd/search (concat search-args [:size 0]))
-        hitcount (esr/total-hits res)
+        hitcount (* 2 (esr/total-hits res)) ;; multiply hitcount by 2
         _ (log/info "Querying results with hit-count:" hitcount)
-        res (apply esd/search (concat search-args [:size hitcount]))]
-    (log/info "raw response:" res)
+        res (apply esd/search (concat search-args [:size hitcount]))
+        n1res (esd/search (es/connect "http://n1:9200") index-name "number" :size hitcount :preference "_local")
+        n2res (esd/search (es/connect "http://n2:9200") index-name "number" :size hitcount :preference "_local")
+        n3res (esd/search (es/connect "http://n3:9200") index-name "number" :size hitcount :preference "_local")
+        n4res (esd/search (es/connect "http://n4:9200") index-name "number" :size hitcount :preference "_local")
+        n5res (esd/search (es/connect "http://n5:9200") index-name "number" :size hitcount :preference "_local")]
+    (log/info "USED raw response:" res)
+    ;; node-specific responses
+    (log/info "n1 raw response (preference=_local):" n1res)
+    (log/info "n2 raw response (preference=_local):" n2res)
+    (log/info "n3 raw response (preference=_local):" n3res)
+    (log/info "n4 raw response (preference=_local):" n4res)
+    (log/info "n5 raw response (preference=_local):" n5res)
     (when (esr/timed-out? res)
       (throw (RuntimeException. "Timed out")))
     (esr/hits-from res)))
-
-(def index-name "jepsen-index")
 
 (defrecord CreateSetClient [client]
   client/Client
