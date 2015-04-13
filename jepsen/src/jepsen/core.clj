@@ -111,7 +111,7 @@
           (when-let [op (generator/op gen test process)]
             (let [op (assoc op
                             :process process
-                            :time    (relative-time-nanos))]
+                            :time    (System/currentTimeMillis))]
               ; Log invocation
               (util/log-op op)
               (conj-op! test op)
