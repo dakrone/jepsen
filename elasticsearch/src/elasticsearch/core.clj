@@ -260,7 +260,7 @@
                     :mappings {mapping-type {:properties {}}})
         (catch clojure.lang.ExceptionInfo e
           (when-not (index-already-exists-error? e)
-            (throw e)))))
+            (throw e))))
       (esa/cluster-health client
                           {:index [index-name] :level "indices"
                            :wait_for_status "green"
