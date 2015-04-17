@@ -120,7 +120,7 @@
                 (try
                   ; Evaluate operation
                   (let [completion (-> (client/invoke! client test op)
-                                       (assoc :time (relative-time-nanos)))]
+                                       (assoc :time (System/currentTimeMillis)))]
                     (util/log-op completion)
 
                     ; Sanity check
@@ -149,7 +149,7 @@
                     ; and leave the invocation uncompleted in the history.
                     (conj-op! test (assoc op
                                           :type :info
-                                          :time  (relative-time-nanos)
+                                          :time  (System/currentTimeMillis)
                                           :value (str "indeterminate: "
                                                       (if (.getCause t)
                                                         (.. t getCause
@@ -171,7 +171,7 @@
           (when-let [op (generator/op gen test :nemesis)]
             (let [op (assoc op
                             :process :nemesis
-                            :time    (relative-time-nanos))]
+                            :time    (System/currentTimeMillis))]
               ; Log invocation in all histories of all currently running cases
               (doseq [history @histories]
                 (swap! history conj op))
@@ -179,7 +179,7 @@
               (try
                 (util/log-op op)
                 (let [completion (-> (client/invoke! nemesis test op)
-                                     (assoc :time (relative-time-nanos)))]
+                                     (assoc :time (System/currentTimeMillis)))]
                   (util/log-op completion)
 
                   ; Nemesis is not allowed to affect the model
@@ -195,7 +195,7 @@
                 (catch Throwable t
                   (doseq [history @histories]
                     (swap! history conj (assoc op
-                                               :time  (relative-time-nanos)
+                                               :time  (System/currentTimeMillis)
                                                :value (str "crashed: " t))))
                   (warn t "Nemesis crashed evaluating" op)))
 
